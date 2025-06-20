@@ -6,7 +6,7 @@
         stage('Checkout Code') {
             steps {
                 echo 'scm git'
-                git branch: 'main', url: 'https://github.com/devopstraininghub/REALTIMEPROJECT.git'
+                git branch: 'main', url: 'https://github.com/PallaviReddyD/REALTIMEPROJECT_Ansible.git'
             }
         }
     	
@@ -25,22 +25,22 @@
                 echo 'scanning project'
                 sh 'ls -ltr'
                 sh '''cd Application && mvn sonar:sonar \\
-                      -Dsonar.host.url=http://3.88.43.182:9000 \\
-                      -Dsonar.login=squ_f7d38d9efecde942052011718376e7479ae66764'''
+                      -Dsonar.host.url=http://34.229.60.58:9000 \\
+                      -Dsonar.login=squ_abec17fc399234452734741a89d2b11f18547056'''
             }
     	}
        stage('Build docker image'){
             steps{
                 script{
                     echo 'docker image build'
-					sh 'cd Application && docker build -t devopshubg333/k8s:${BUILD_NUMBER} .'
+					sh 'cd Application && docker build -t pallavi033/k8s:${BUILD_NUMBER} .'
                 }
             }
         }
 		
        stage('docker image scan'){
         steps{
-            sh "trivy image devopshubg333/k8s:${BUILD_NUMBER}"
+            sh "trivy image pallavi033/k8s:${BUILD_NUMBER}"
         }
     }		
  
@@ -49,24 +49,24 @@
             steps{
                 script{
                    withCredentials([string(credentialsId: 'dockerhub', variable: 'dockerhub')]) {
-                   sh 'docker login -u devopshubg333 -p ${dockerhub}'
+                   sh 'docker login -u pallavi033 -p ${dockerhub}'
 
               }
-                   sh 'docker push devopshubg333/k8s:${BUILD_NUMBER}'
+                   sh 'docker push pallavi033/k8s:${BUILD_NUMBER}'
                 }
             }
         }
 		
       stage('Update kubernetes Deployment manifest File') {
         environment {
-            GIT_REPO_NAME = "REALTIMEPROJECT"
-            GIT_USER_NAME = "devopstraininghub"
+            GIT_REPO_NAME = "REALTIMEPROJECT_Ansible"
+            GIT_USER_NAME = "PallaviReddyD"
         }
         steps {
             withCredentials([string(credentialsId: 'github', variable: 'GITHUB_TOKEN')]) {
                 sh '''
-                    git config user.email "madhu@gmail.com"
-                    git config user.name "madhu"
+                    git config user.email "pallavi@gmail.com"
+                    git config user.name "pallavi"
                     BUILD_NUMBER=${BUILD_NUMBER}
                   
                     sed -i "s/k8s:.*/k8s:${BUILD_NUMBER}/g" Ansible/k8s_deployment.yaml
