@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
       - name: my-app
-        image: pallavi033/k8s:2
+        image: pallavi033/k8s:3
         ports:
         - containerPort: 8080
 ---
